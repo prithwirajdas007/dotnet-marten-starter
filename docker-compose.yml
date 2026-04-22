@@ -1,0 +1,22 @@
+# Postgres for the Marten event store and projections.
+# Port 5433 on the host to avoid clashing with a local Postgres on 5432.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: marten-starter-pg
+    environment:
+      POSTGRES_USER: marten
+      POSTGRES_PASSWORD: marten
+      POSTGRES_DB: marten_starter
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U marten -d marten_starter"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+volumes:
+  pgdata:

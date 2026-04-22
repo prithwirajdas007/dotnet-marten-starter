@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Intentionally has no package references.
+    The domain stays a POCO island — events, aggregates, and read models
+    compile without knowing Marten exists. Infra wiring lives in the Api project.
+  -->
+
+</Project>

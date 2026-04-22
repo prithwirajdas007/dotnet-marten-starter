@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\MartenStarter.Domain\MartenStarter.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MartenStarter.Api/MartenStarter.Api.csproj" />
+    <Project Path="src/MartenStarter.Domain/MartenStarter.Domain.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MartenStarter.Tests/MartenStarter.Tests.csproj" />
+  </Folder>
+</Solution>
