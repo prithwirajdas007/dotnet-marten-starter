@@ -4,4 +4,9 @@
     <ProjectReference Include="..\MartenStarter.Domain\MartenStarter.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FastEndpoints" Version="8.1.0" />
+    <PackageReference Include="Marten" Version="8.32.0" />
+  </ItemGroup>
+
 </Project>

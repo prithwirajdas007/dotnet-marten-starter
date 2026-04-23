@@ -1,0 +1,31 @@
+@host = http://localhost:5000
+
+### Health check
+GET {{host}}/
+
+### Create a trade
+# @name createTrade
+POST {{host}}/api/trades
+Content-Type: application/json
+
+{
+  "instrument": "USDCAD",
+  "quantity": 1000000,
+  "side": "Buy"
+}
+
+### Fetch the trade we just created
+GET {{host}}/api/trades/{{createTrade.response.body.id}}
+
+### Creating with a non-positive quantity should 400
+POST {{host}}/api/trades
+Content-Type: application/json
+
+{
+  "instrument": "USDCAD",
+  "quantity": 0,
+  "side": "Buy"
+}
+
+### Fetching an unknown id should 404
+GET {{host}}/api/trades/00000000-0000-0000-0000-000000000000
