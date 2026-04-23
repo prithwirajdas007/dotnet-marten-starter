@@ -17,7 +17,61 @@ Content-Type: application/json
 ### Fetch the trade we just created
 GET {{host}}/api/trades/{{createTrade.response.body.id}}
 
-### Creating with a non-positive quantity should 400
+### Price it
+POST {{host}}/api/trades/{{createTrade.response.body.id}}/price
+Content-Type: application/json
+
+{
+  "price": 1.37,
+  "currency": "CAD"
+}
+
+### Execute it
+POST {{host}}/api/trades/{{createTrade.response.body.id}}/execute
+Content-Type: application/json
+
+{
+  "executionPrice": 1.371,
+  "counterparty": "BankX"
+}
+
+### Try to cancel after execution — should 422 (business rule violation)
+POST {{host}}/api/trades/{{createTrade.response.body.id}}/cancel
+Content-Type: application/json
+
+{
+  "reason": "too late"
+}
+
+### Amend a (different) trade before pricing
+# @name createAmendable
+POST {{host}}/api/trades
+Content-Type: application/json
+
+{
+  "instrument": "EURUSD",
+  "quantity": 500000,
+  "side": "Sell"
+}
+
+### Amend its quantity
+POST {{host}}/api/trades/{{createAmendable.response.body.id}}/amend
+Content-Type: application/json
+
+{
+  "newQuantity": 750000
+}
+
+### Cancel it
+POST {{host}}/api/trades/{{createAmendable.response.body.id}}/cancel
+Content-Type: application/json
+
+{
+  "reason": "client withdrew"
+}
+
+### Error paths
+### 400 — zero quantity
 POST {{host}}/api/trades
 Content-Type: application/json
 
@@ -27,5 +81,5 @@ Content-Type: application/json
   "side": "Buy"
 }
 
-### Fetching an unknown id should 404
-GET {{host}}/api/trades/00000000-0000-0000-0000-000000000000
+### 404 — unknown id
+GET {{host}}/api/trades/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee

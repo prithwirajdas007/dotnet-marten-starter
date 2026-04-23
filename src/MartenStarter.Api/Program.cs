@@ -3,6 +3,7 @@ using FastEndpoints;
 using JasperFx;
 using JasperFx.Events.Projections;
 using Marten;
+using Marten.Exceptions;
 using MartenStarter.Domain;
 using MartenStarter.Domain.Projections;
 using Weasel.Core;
@@ -49,6 +50,13 @@ app.Use(async (ctx, next) =>
     {
         ctx.Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
         await ctx.Response.WriteAsJsonAsync(new { error = "business_rule", message = ex.Message });
+    }
+    catch (ConcurrencyException ex) when (!ctx.Response.HasStarted)
+    {
+        // Someone else wrote to this stream between our load and our save.
+        // Client should re-read and retry.
+        ctx.Response.StatusCode = StatusCodes.Status409Conflict;
+        await ctx.Response.WriteAsJsonAsync(new { error = "concurrency", message = ex.Message });
     }
     catch (ArgumentException ex) when (!ctx.Response.HasStarted)
     {
