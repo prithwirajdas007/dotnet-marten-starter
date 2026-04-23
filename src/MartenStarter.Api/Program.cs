@@ -1,8 +1,10 @@
 using System.Text.Json.Serialization;
 using FastEndpoints;
 using JasperFx;
+using JasperFx.Events.Projections;
 using Marten;
 using MartenStarter.Domain;
+using MartenStarter.Domain.Projections;
 using Weasel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +23,10 @@ builder.Services.AddMarten(opts =>
     {
         opts.AutoCreateSchemaObjects = AutoCreate.All;
     }
+
+    // Inline = updated in the same transaction as the event append. Either both
+    // land or neither does, so reads never see a stream ahead of its summary.
+    opts.Projections.Add<TradeOrderSummaryProjection>(ProjectionLifecycle.Inline);
 })
 // Lightweight sessions skip identity-map tracking — cheaper, and we don't need
 // change-tracking for event-sourced writes anyway.

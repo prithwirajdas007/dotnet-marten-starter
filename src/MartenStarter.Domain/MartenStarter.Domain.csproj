@@ -1,9 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <!--
-    Intentionally has no package references.
-    The domain stays a POCO island — events, aggregates, and read models
-    compile without knowing Marten exists. Infra wiring lives in the Api project.
+    Events and aggregates stay POCOs. The one exception is Marten — required by the
+    projection classes, which live alongside the events they project from. Everything
+    outside Projections/ still compiles without knowing Marten exists.
   -->
+
+  <ItemGroup>
+    <PackageReference Include="Marten" Version="8.32.0" />
+  </ItemGroup>
 
 </Project>

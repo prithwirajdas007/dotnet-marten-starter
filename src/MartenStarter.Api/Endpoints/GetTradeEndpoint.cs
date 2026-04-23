@@ -1,11 +1,11 @@
 using FastEndpoints;
 using Marten;
-using MartenStarter.Domain.Aggregates;
+using MartenStarter.Domain.Projections;
 
 namespace MartenStarter.Api.Endpoints;
 
 public sealed class GetTradeEndpoint(IQuerySession session)
-    : EndpointWithoutRequest<TradeOrder>
+    : EndpointWithoutRequest<TradeOrderSummary>
 {
     public override void Configure()
     {
@@ -17,26 +17,16 @@ public sealed class GetTradeEndpoint(IQuerySession session)
     {
         var id = Route<Guid>("id");
 
-        // Guard against Guid.Empty — Marten treats it as "no stream filter" and will
-        // happily replay every event in the table into a single aggregate. Ask me how
-        // I know.
-        if (id == Guid.Empty)
+        // Single indexed lookup against mt_doc_trade_order_summary — no stream replay.
+        // The inline projection kept this row in sync when the events were appended.
+        var summary = await session.LoadAsync<TradeOrderSummary>(id, ct);
+
+        if (summary is null)
         {
             await Send.NotFoundAsync(ct);
             return;
         }
 
-        // Live aggregation — Marten replays the full stream on every request to
-        // rebuild the aggregate. Fine while streams are tiny; gets expensive fast.
-        // TODO phase 3: read from the TradeOrderSummary projection instead.
-        var trade = await session.Events.AggregateStreamAsync<TradeOrder>(id, token: ct);
-
-        if (trade is null)
-        {
-            await Send.NotFoundAsync(ct);
-            return;
-        }
-
-        await Send.OkAsync(trade, ct);
+        await Send.OkAsync(summary, ct);
     }
 }
