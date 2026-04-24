@@ -70,6 +70,18 @@ Content-Type: application/json
   "reason": "client withdrew"
 }
 
+### List all trades (newest first, capped at 100)
+GET {{host}}/api/trades
+
+### Filter by status
+GET {{host}}/api/trades?status=Priced
+
+### Filter by instrument
+GET {{host}}/api/trades?instrument=USDCAD
+
+### Combined filter
+GET {{host}}/api/trades?status=Created&instrument=EURUSD
+
 ### Daily volume roll-up — rolls up all TradeOrderCreated events by (date, instrument)
 GET {{host}}/api/daily-volume
 
