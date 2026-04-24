@@ -28,6 +28,9 @@ builder.Services.AddMarten(opts =>
     // Inline = updated in the same transaction as the event append. Either both
     // land or neither does, so reads never see a stream ahead of its summary.
     opts.Projections.Add<TradeOrderSummaryProjection>(ProjectionLifecycle.Inline);
+
+    // Cross-stream roll-up: many trade streams fold into a few (date, instrument) docs.
+    opts.Projections.Add<DailyTradeVolumeProjection>(ProjectionLifecycle.Inline);
 })
 // Lightweight sessions skip identity-map tracking — cheaper, and we don't need
 // change-tracking for event-sourced writes anyway.

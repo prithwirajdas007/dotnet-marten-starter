@@ -70,6 +70,9 @@ Content-Type: application/json
   "reason": "client withdrew"
 }
 
+### Daily volume roll-up — rolls up all TradeOrderCreated events by (date, instrument)
+GET {{host}}/api/daily-volume
+
 ### Error paths
 ### 400 — zero quantity
 POST {{host}}/api/trades
