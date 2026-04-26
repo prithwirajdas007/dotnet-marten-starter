@@ -78,3 +78,7 @@ app.UseFastEndpoints(c =>
 app.MapGet("/", () => "dotnet-marten-starter is running. Try POST /api/trades.");
 
 app.Run();
+
+// Exposes the top-level program class so Alba's AlbaHost.For<Program>() can find
+// the entry point. No runtime effect — just a visibility quirk of top-level statements.
+public partial class Program;
