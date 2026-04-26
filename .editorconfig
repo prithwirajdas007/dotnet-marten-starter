@@ -1,0 +1,36 @@
+# Repo-wide editor settings. Pairs with Directory.Build.props
+# (TreatWarningsAsErrors etc) — that's compile, this is style.
+
+root = true
+
+[*]
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{yml,yaml,json,md}]
+indent_size = 2
+
+[*.cs]
+# Modern C# layout — what this repo uses everywhere.
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_using_directive_placement = outside_namespace:warning
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+
+# Var preferences: explicit for built-ins (clarifies decimal vs int etc),
+# var elsewhere where the right side already names the type.
+csharp_style_var_for_built_in_types = false:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = true:silent
+
+# Expression-bodied members where they fit on one line.
+csharp_style_expression_bodied_methods = when_on_single_line:silent
+csharp_style_expression_bodied_constructors = when_on_single_line:silent
+csharp_style_expression_bodied_lambdas = true:silent
+
+# Modern syntax we use throughout.
+csharp_prefer_simple_using_statement = true:suggestion
+csharp_style_prefer_primary_constructors = true:suggestion
