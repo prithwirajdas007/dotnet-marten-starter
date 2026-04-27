@@ -36,13 +36,16 @@ dotnet run --project src/MartenStarter.Api --urls=http://localhost:5050
 Then poke at the API:
 
 ```sh
-# Create a trade
+# Drop 5 sample trades across every lifecycle state
+curl -X POST http://localhost:5050/api/seed
+
+# List them
+curl http://localhost:5050/api/trades
+
+# Or create your own
 curl -X POST http://localhost:5050/api/trades \
   -H "Content-Type: application/json" \
   -d '{"instrument":"USDCAD","quantity":1000000,"side":"Buy"}'
-
-# List trades
-curl http://localhost:5050/api/trades
 ```
 
 [`MartenStarter.Api.http`](src/MartenStarter.Api/MartenStarter.Api.http) has the full set of click-to-run scenarios for VS / Rider.
@@ -104,6 +107,7 @@ sequenceDiagram
 | POST | `/api/trades/{id}/cancel` | Cancel |
 | POST | `/api/trades/{id}/amend` | Amend quantity |
 | GET | `/api/daily-volume` | Per-(date, instrument) rollup |
+| POST | `/api/seed` | Drop 5 sample trades across every lifecycle state (demo) |
 
 Errors come back in a consistent shape:
 

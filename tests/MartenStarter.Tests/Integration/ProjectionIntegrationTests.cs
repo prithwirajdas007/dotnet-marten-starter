@@ -99,6 +99,29 @@ public class ProjectionIntegrationTests(IntegrationTestFixture fixture) : IAsync
         Assert.All(list, t => Assert.Equal("USDCAD", t.Instrument));
     }
 
+    [Fact]
+    public async Task Seed_creates_five_trades_spanning_every_state()
+    {
+        await fixture.Host.Scenario(x =>
+        {
+            x.Post.Url("/api/seed");
+            x.StatusCodeShouldBe(200);
+        });
+
+        var listResult = await fixture.Host.Scenario(x =>
+        {
+            x.Get.Url("/api/trades");
+            x.StatusCodeShouldBe(200);
+        });
+        var list = listResult.FromJson<List<TradeOrderSummary>>();
+
+        Assert.Equal(5, list.Count);
+        Assert.Contains(list, t => t.Status == TradeStatus.Created);
+        Assert.Contains(list, t => t.Status == TradeStatus.Priced);
+        Assert.Contains(list, t => t.Status == TradeStatus.Executed);
+        Assert.Contains(list, t => t.Status == TradeStatus.Cancelled);
+    }
+
     // ---------- helpers ----------
 
     private async Task<Guid> CreateTrade(string instrument, decimal quantity)

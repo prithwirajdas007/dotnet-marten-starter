@@ -1,7 +1,9 @@
 using Alba;
+using Marten;
 using MartenStarter.Api.Endpoints;
 using MartenStarter.Domain.Aggregates;
 using MartenStarter.Domain.Projections;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MartenStarter.Tests.Integration;
 
@@ -123,6 +125,27 @@ public class TradeLifecycleIntegrationTests(IntegrationTestFixture fixture) : IA
             x.Post.Json(new { reason = "   " }).ToUrl($"/api/trades/{id}/cancel");
             x.StatusCodeShouldBe(400);
         });
+    }
+
+    [Fact]
+    public async Task Cancelling_a_trade_archives_its_event_stream()
+    {
+        var id = await CreateTrade("USDCAD", 1m, "Buy");
+
+        await fixture.Host.Scenario(x =>
+        {
+            x.Post.Json(new { reason = "client withdrew" }).ToUrl($"/api/trades/{id}/cancel");
+            x.StatusCodeShouldBe(200);
+        });
+
+        // Inspect the stream state directly via Marten — the IsArchived flag on
+        // mt_streams is what ArchiveStream toggles.
+        var store = fixture.Host.Services.GetRequiredService<IDocumentStore>();
+        await using var session = store.QuerySession();
+        var streamState = await session.Events.FetchStreamStateAsync(id);
+
+        Assert.NotNull(streamState);
+        Assert.True(streamState!.IsArchived);
     }
 
     // ---------- helpers ----------

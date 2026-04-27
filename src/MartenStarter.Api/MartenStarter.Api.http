@@ -70,6 +70,9 @@ Content-Type: application/json
   "reason": "client withdrew"
 }
 
+### Seed — drop 5 trades across every lifecycle state. Useful right after `docker compose up -d`.
+POST {{host}}/api/seed
+
 ### List all trades (newest first, capped at 100)
 GET {{host}}/api/trades
 
